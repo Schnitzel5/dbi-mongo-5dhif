@@ -23,8 +23,8 @@ public class PrepareConfig {
                 .phoneNr("+43 664 999999")
                 .password("root")
                 .role(Role.ROLE_STUDENT)
-                .enabled(true)
                 .build();
         personRepository.save(person);
+        System.out.println(personRepository.findAll());
     }
 }

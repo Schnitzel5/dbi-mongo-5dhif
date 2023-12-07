@@ -1,5 +1,6 @@
 package at.spengergasse.efees.model;
 
+import at.spengergasse.efees.dto.PersonDto;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.bson.types.ObjectId;
@@ -7,6 +8,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 import org.springframework.data.mongodb.core.mapping.MongoId;
+
+import java.util.Optional;
 
 @Document("persons")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -25,7 +28,6 @@ public class Person {
     protected String lastName;
     @NotNull
     @Setter
-    @Field()
     protected String email;
     @Setter
     protected String phoneNr;
@@ -33,4 +35,13 @@ public class Person {
     protected Role role;
     @Setter
     private String password;
+    public PersonDto prepareDto() {
+        var dto = new PersonDto();
+        dto.setId(Optional.ofNullable(getId()).map(String::valueOf).orElse(""));
+        dto.setFirstName(getFirstName());
+        dto.setLastName(getLastName());
+        dto.setEmail(getEmail());
+        dto.setPhoneNr(getPhoneNr());
+        return dto;
+    }
 }

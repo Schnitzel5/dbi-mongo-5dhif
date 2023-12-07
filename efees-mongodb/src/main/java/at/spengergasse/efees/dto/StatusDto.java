@@ -15,7 +15,7 @@ public class StatusDto {
             return null;
         }
         return StatusDto.builder()
-                .person(PersonDto.fromEntity(person))
+                .person(person.prepareDto())
                 .status(status.name())
                 .build();
     }

@@ -19,6 +19,10 @@ public class EmergencyService {
     private final EmergencyRepository emergencyRepository;
     private final PersonRepository personRepository;
 
+    public List<Emergency> findAll() {
+        return emergencyRepository.findAll();
+    }
+
     public Optional<Emergency> getOpenEmergency() {
         return emergencyRepository.findOpenEmergencies().stream().findAny();
     }

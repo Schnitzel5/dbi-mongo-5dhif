@@ -27,5 +27,6 @@ public class Emergency extends AbstractPersistable<Long> {
     @Setter
     private boolean finished;
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ToString.Exclude
     private List<Person> persons;
 }

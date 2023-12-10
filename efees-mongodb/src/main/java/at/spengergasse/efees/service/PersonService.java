@@ -1,6 +1,5 @@
 package at.spengergasse.efees.service;
 
-import at.spengergasse.efees.dto.PersonDto;
 import at.spengergasse.efees.model.Person;
 import at.spengergasse.efees.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +28,8 @@ public class PersonService {
         return personRepository.findByEmail(email);
     }
 
-    public List<PersonDto> findAllPersons() {
-        return personRepository.findAll().stream().map(Person::prepareDto).toList();
+    public List<Person> findAllPersons() {
+        return personRepository.findAll();
     }
 
     public Person saveUser(Person user) {
@@ -43,16 +42,16 @@ public class PersonService {
         personRepository.saveAll(users);
     }
 
-    public Person updateUser(String email, PersonDto personDto) {
-        if (email == null || personDto == null) {
+    public Person updateUser(String email, Person person) {
+        if (email == null || person == null) {
             return null;
         }
         var temp = personRepository.findByEmail(email);
         if (temp.isPresent()) {
-            Optional.ofNullable(personDto.getFirstName()).ifPresent(temp.get()::setFirstName);
-            Optional.ofNullable(personDto.getLastName()).ifPresent(temp.get()::setLastName);
-            Optional.ofNullable(personDto.getEmail()).ifPresent(temp.get()::setEmail);
-            Optional.ofNullable(personDto.getPhoneNr()).ifPresent(temp.get()::setPhoneNr);
+            Optional.ofNullable(person.getFirstName()).ifPresent(temp.get()::setFirstName);
+            Optional.ofNullable(person.getLastName()).ifPresent(temp.get()::setLastName);
+            Optional.ofNullable(person.getEmail()).ifPresent(temp.get()::setEmail);
+            Optional.ofNullable(person.getPhoneNr()).ifPresent(temp.get()::setPhoneNr);
             return saveUser(temp.get());
         }
         return null;

@@ -9,7 +9,9 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @Document("persons")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -32,9 +34,12 @@ public class Person {
     @Setter
     protected String phoneNr;
     @Setter
-    protected Role role;
-    @Setter
     private String password;
+    @Setter
+    @Builder.Default
+    private Safety safety = Safety.PENDING;
+    @Setter
+    private Set<String> signals = new HashSet<>();
     public PersonDto prepareDto() {
         var dto = new PersonDto();
         dto.setId(Optional.ofNullable(getId()).map(String::valueOf).orElse(""));

@@ -1,10 +1,13 @@
 package at.spengergasse.efees.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import lombok.*;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,4 +26,6 @@ public class Emergency extends AbstractPersistable<Long> {
     private String notice = "";
     @Setter
     private boolean finished;
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<Person> persons;
 }

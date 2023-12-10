@@ -1,21 +1,14 @@
 package at.spengergasse.efees.service;
 
-import at.spengergasse.efees.dto.StatusDto;
-import at.spengergasse.efees.exception.NotValidException;
 import at.spengergasse.efees.model.Emergency;
-import at.spengergasse.efees.model.Person;
-import at.spengergasse.efees.model.SafePerson;
-import at.spengergasse.efees.model.Safety;
 import at.spengergasse.efees.repository.EmergencyRepository;
 import at.spengergasse.efees.repository.PersonRepository;
-import at.spengergasse.efees.repository.SafePersonRepository;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -24,7 +17,6 @@ import java.util.*;
 public class EmergencyService {
 
     private final EmergencyRepository emergencyRepository;
-    private final SafePersonRepository safePersonRepository;
     private final PersonRepository personRepository;
 
     public Optional<Emergency> getOpenEmergency() {
@@ -35,7 +27,13 @@ public class EmergencyService {
         return getOpenEmergency().isPresent();
     }
 
-    public Optional<Emergency> startEmergency() {
+    public Emergency saveEmergency(Emergency emergency) {
+        return Optional.ofNullable(emergency)
+                .map(emergencyRepository::save)
+                .orElse(null);
+    }
+
+    /*public Optional<Emergency> startEmergency() {
         if (getOpenEmergency().isPresent()) {
             throw new NotValidException("Emergency has already started!");
         }
@@ -152,6 +150,6 @@ public class EmergencyService {
                 .map(p -> SafePerson.builder().person(p).emergency(emergency).build())
                 .forEach(safePersonRepository::save);
         return emergency;
-    }
+    }*/
 
 }

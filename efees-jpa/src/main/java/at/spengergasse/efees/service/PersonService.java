@@ -36,6 +36,10 @@ public class PersonService {
                 .orElse(null);
     }
 
+    public void saveUserBatch(List<Person> users) {
+        personRepository.saveAll(users);
+    }
+
     public Person updateUser(String email, PersonDto personDto) {
         if (email == null || personDto == null) {
             return null;

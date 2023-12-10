@@ -1,6 +1,8 @@
 package at.spengergasse.efees;
 
+import at.spengergasse.efees.model.Emergency;
 import at.spengergasse.efees.model.Person;
+import at.spengergasse.efees.service.EmergencyService;
 import at.spengergasse.efees.service.PersonService;
 import com.github.javafaker.Faker;
 import com.github.javafaker.service.FakeValuesService;
@@ -11,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,10 +24,12 @@ class EfeesApplicationTests {
 
 	@Autowired
 	PersonService personService;
+	@Autowired
+	EmergencyService emergencyService;
 
 	@BeforeAll
 	static void beforeAll() {
-		System.out.println("----------JPA TEST----------");
+		System.out.println("----------MONGODB TEST----------");
 	}
 
 	@Test
@@ -32,53 +38,22 @@ class EfeesApplicationTests {
 
 	@Test
 	void insertHundred() {
-		for (int i = 0; i < 100; i++) {
-			int size = personService.findAllPersons().size();
-			Faker faker = new Faker(Locale.GERMAN);
-			FakeValuesService fakeValuesService = new FakeValuesService(Locale.GERMAN, new RandomService());
-			String email = fakeValuesService.bothify("????##@gmail.com");
-			String phoneNr = fakeValuesService.regexify("+43 664 \\d{9,15}");
-			String firstName = faker.name().firstName();
-			String lastName = faker.name().lastName();
-			var person = Person.builder()
-					.firstName(firstName)
-					.lastName(lastName)
-					.email(email)
-					.phoneNr(phoneNr)
-					.build();
-			personService.saveUser(person);
-			assertEquals(size + 1, personService.findAllPersons().size());
-		}
-		System.out.println("Count: " + personService.findAllPersons().size());
+		insertMass(100);
 	}
 
 	@Test
 	void insertThousand() {
-		for (int i = 0; i < 1000; i++) {
-			int size = personService.findAllPersons().size();
-			Faker faker = new Faker(Locale.GERMAN);
-			FakeValuesService fakeValuesService = new FakeValuesService(Locale.GERMAN, new RandomService());
-			String email = fakeValuesService.bothify("????##@gmail.com");
-			String phoneNr = fakeValuesService.regexify("+43 664 \\d{9,15}");
-			String firstName = faker.name().firstName();
-			String lastName = faker.name().lastName();
-			var person = Person.builder()
-					.firstName(firstName)
-					.lastName(lastName)
-					.email(email)
-					.phoneNr(phoneNr)
-					.build();
-			personService.saveUser(person);
-			assertEquals(size + 1, personService.findAllPersons().size());
-		}
-		System.out.println("Count: " + personService.findAllPersons().size());
+		insertMass(1_000);
 	}
 
 	@Test
 	void insertHundredThousand() {
-		//for (int i = 0; i < 100000; i++) {
-		for (int i = 0; i < 10000; i++) {
-			int size = personService.findAllPersons().size();
+		insertMass(100_000);
+	}
+
+	private void insertMass(int scale) {
+		List<Person> persons = new ArrayList<>();
+		for (int i = 0; i < scale; i++) {
 			Faker faker = new Faker(Locale.GERMAN);
 			FakeValuesService fakeValuesService = new FakeValuesService(Locale.GERMAN, new RandomService());
 			String email = fakeValuesService.bothify("????##@gmail.com");
@@ -91,15 +66,22 @@ class EfeesApplicationTests {
 					.email(email)
 					.phoneNr(phoneNr)
 					.build();
-			personService.saveUser(person);
-			assertEquals(size + 1, personService.findAllPersons().size());
+			persons.add(person);
 		}
-		System.out.println("Count: " + personService.findAllPersons().size());
+		Emergency emergency = Emergency.builder()
+				.persons(persons)
+				.build();
+		// personService.saveUserBatch(persons);
+		emergencyService.saveEmergency(emergency);
+		var result = emergencyService.findAll();
+		System.out.println(result.get(result.size() - 1).getPersons().size());
+		assertEquals(scale, result.get(result.size() - 1).getPersons().size());
+		// System.out.println("Count: " + size + scale);
 	}
 
 	@AfterAll
 	static void afterAll() {
-		System.out.println("----------JPA TEST----------");
+		System.out.println("----------MONGODB TEST----------");
 	}
 
 }

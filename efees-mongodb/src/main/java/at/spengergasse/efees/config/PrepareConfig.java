@@ -22,7 +22,6 @@ public class PrepareConfig {
                 .email("DUO20246@spengergasse.at")
                 .phoneNr("+43 664 999999")
                 .password("root")
-                .role(Role.ROLE_STUDENT)
                 .build();
         personRepository.save(person);
         System.out.println(personRepository.findAll());

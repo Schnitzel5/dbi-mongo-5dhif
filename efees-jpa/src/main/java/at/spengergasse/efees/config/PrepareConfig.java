@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = @Autowired, access = AccessLevel.PROTECTED)
@@ -25,10 +26,12 @@ public class PrepareConfig {
 
     @EventListener(ApplicationReadyEvent.class)
     public void fillData() {
-        insertSample();
+        insertSample("Testalarm 2021");
+        insertSample("Testalarm 2022");
     }
 
-    private void insertSample() {
+    private void insertSample(String notice) {
+        Safety[] safetyValues = Safety.values();
         List<Person> persons = new ArrayList<>();
         for (int i = 0; i < 15; i++) {
             Faker faker = new Faker(Locale.GERMAN);
@@ -42,11 +45,13 @@ public class PrepareConfig {
                     .lastName(lastName)
                     .email(email)
                     .phoneNr(phoneNr)
+                    .safety(safetyValues[ThreadLocalRandom.current().nextInt(safetyValues.length)])
                     .build();
             persons.add(person);
         }
         Emergency emergency = Emergency.builder()
                 .persons(persons)
+                .notice(notice)
                 .build();
         var result = emergencyService.saveEmergency(emergency);
         result.getPersons().forEach(person -> {

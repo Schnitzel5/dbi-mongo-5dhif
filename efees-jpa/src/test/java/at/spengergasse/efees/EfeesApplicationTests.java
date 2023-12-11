@@ -65,16 +65,16 @@ class EfeesApplicationTests {
 	@Order(3)
 	void insertHundredThousand() {
 		var start = Instant.now();
-		//insertMass(100_000);
+		insertMass(50_000);
 		var end = Instant.now();
-		System.out.println("Insert 100000: " + Duration.between(start, end).toString());
+		System.out.println("Insert 50000: " + Duration.between(start, end).toString());
 	}
 
 	@Test
 	@Order(4)
 	void findAll() {
 		var start = Instant.now();
-		System.out.println(personService.findAllPersons().size());
+		System.out.println("FindAll: " + personService.findAllPersons().size());
 		var end = Instant.now();
 		System.out.println("FindAll: " + Duration.between(start, end).toString());
 	}
@@ -102,7 +102,7 @@ class EfeesApplicationTests {
 		emergencyService.findAll().stream().filter(emergency -> emergency.getId() != null)
 				.forEach(emergency -> {
 					var result = personService.findAllByEmergencyOnlyCrucialInfo(emergency.getId());
-					System.out.println(result);
+					//System.out.println(result);
 					System.out.println("findAllByEmergencyOnlyCrucialInfo: " + result.size());
 				});
 		var end = Instant.now();
@@ -116,7 +116,7 @@ class EfeesApplicationTests {
 		emergencyService.findAll().stream().filter(emergency -> emergency.getId() != null)
 				.forEach(emergency -> {
 					var result = personService.findAllByEmergencyOnlyCrucialInfoSorted(emergency.getId());
-					System.out.println(result);
+					//System.out.println(result);
 					System.out.println("findAllByEmergencyOnlyCrucialInfo: " + result.size());
 				});
 		var end = Instant.now();

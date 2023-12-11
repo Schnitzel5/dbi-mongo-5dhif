@@ -60,9 +60,9 @@ class EfeesApplicationTests {
 	@Order(3)
 	void insertHundredThousand() {
 		var start = Instant.now();
-		//insertMass(100_000);
+		insertMass(50_000);
 		var end = Instant.now();
-		System.out.println("Insert 100000: " + Duration.between(start, end).toString());
+		System.out.println("Insert 50000: " + Duration.between(start, end).toString());
 	}
 
 	@Test

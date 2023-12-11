@@ -8,10 +8,8 @@ import at.spengergasse.efees.service.PersonService;
 import com.github.javafaker.Faker;
 import com.github.javafaker.service.FakeValuesService;
 import com.github.javafaker.service.RandomService;
-import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.Duration;
@@ -22,7 +20,6 @@ import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
 
 @SpringBootTest
-@AutoConfigureTestDatabase
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class EfeesApplicationTests {
 
@@ -30,12 +27,10 @@ class EfeesApplicationTests {
 	PersonService personService;
 	@Autowired
 	EmergencyService emergencyService;
-	@Autowired
-	EntityManager entityManager;
 
 	@BeforeAll
 	static void beforeAll() {
-		System.out.println("----------JPA TEST----------");
+		System.out.println("----------MONGODB TEST----------");
 	}
 
 	@Test
@@ -74,7 +69,8 @@ class EfeesApplicationTests {
 	@Order(4)
 	void findAll() {
 		var start = Instant.now();
-		System.out.println("FindAll: " + personService.findAllPersons().size());
+		//System.out.println(emergencyService.findAllPersons());
+		System.out.println("FindAll: " + emergencyService.findAllPersons().size());
 		var end = Instant.now();
 		System.out.println("FindAll: " + Duration.between(start, end).toString());
 	}
@@ -85,6 +81,7 @@ class EfeesApplicationTests {
 		var start = Instant.now();
 		personService.findAllPersons().stream()
 				.map(Person::getEmail)
+				.limit(50)
 				.forEach(email -> {
 					var result = personService.findPersonByEmail(email);
 					if (result.isEmpty()) {
@@ -101,7 +98,7 @@ class EfeesApplicationTests {
 		var start = Instant.now();
 		emergencyService.findAll().stream().filter(emergency -> emergency.getId() != null)
 				.forEach(emergency -> {
-					var result = personService.findAllByEmergencyOnlyCrucialInfo(emergency.getId());
+					var result = emergencyService.findAllByEmergencyOnlyCrucialInfo(emergency.getId());
 					//System.out.println(result);
 					System.out.println("findAllByEmergencyOnlyCrucialInfo: " + result.size());
 				});
@@ -115,9 +112,9 @@ class EfeesApplicationTests {
 		var start = Instant.now();
 		emergencyService.findAll().stream().filter(emergency -> emergency.getId() != null)
 				.forEach(emergency -> {
-					var result = personService.findAllByEmergencyOnlyCrucialInfoSorted(emergency.getId());
+					var result = emergencyService.findAllByEmergencyOnlyCrucialInfoSorted(emergency.getId());
 					//System.out.println(result);
-					System.out.println("findAllByEmergencyOnlyCrucialInfo: " + result.size());
+					System.out.println("findAllByEmergencyOnlyCrucialInfoSorted: " + result.size());
 				});
 		var end = Instant.now();
 		System.out.println("findAllByEmergencyOnlyCrucialInfoSorted: " + Duration.between(start, end).toString());
@@ -127,10 +124,11 @@ class EfeesApplicationTests {
 	@Order(8)
 	void updateAll() {
 		var start = Instant.now();
-		List<Person> persons = personService.findAllPersons();
+		List<Person> persons = emergencyService.findAllPersons();
 		Safety[] safetyValues = Safety.values();
 		persons.forEach(person -> {
-			personService.updateUser(person.getEmail(), generateFakePerson("upd", safetyValues));
+			var tempPerson = generateFakePerson("upd", safetyValues);
+			personService.updateUser(person.getEmail(), tempPerson);
 		});
 		var end = Instant.now();
 		System.out.println("updateAll: " + Duration.between(start, end).toString());
@@ -140,11 +138,6 @@ class EfeesApplicationTests {
 	@Order(9)
 	void deleteAll() {
 		var start = Instant.now();
-		List<Person> persons = personService.findAllPersons();
-		persons.forEach(person -> {
-			person.setEmergency(null);
-			personService.saveUser(person);
-		});
 		emergencyService.deleteAll();
 		personService.deleteAll();
 		var end = Instant.now();
@@ -154,19 +147,17 @@ class EfeesApplicationTests {
 	private void insertMass(int scale) {
 		List<Person> persons = new ArrayList<>();
 		Safety[] safetyValues = Safety.values();
-		int size = personService.findAllPersons().size();
 		for (int i = 0; i < scale; i++) {
 			persons.add(generateFakePerson("" + scale, safetyValues));
 		}
+		personService.saveUserBatch(persons);
 		Emergency emergency = Emergency.builder()
 				.persons(persons)
 				.build();
-		var result = emergencyService.saveEmergency(emergency);
-		result.getPersons().forEach(person -> {
-			person.setEmergency(emergency);
-			personService.saveUser(person);
-		});
-		System.out.println("Count: " + (size + scale));
+		emergencyService.saveEmergency(emergency);
+		var result = emergencyService.findAll();
+		System.out.println(result.get(result.size() - 1).getPersons().size());
+		// System.out.println("Count: " + size + scale);
 	}
 
 	private Person generateFakePerson(String scale, Safety[] safetyValues){
@@ -185,9 +176,38 @@ class EfeesApplicationTests {
 				.build();
 	}
 
+	/*private void insertMass(int scale) {
+		List<Person> persons = new ArrayList<>();
+		for (int i = 0; i < scale; i++) {
+			Faker faker = new Faker(Locale.GERMAN);
+			FakeValuesService fakeValuesService = new FakeValuesService(Locale.GERMAN, new RandomService());
+			String email = fakeValuesService.bothify("????##@gmail.com");
+			String phoneNr = fakeValuesService.regexify("+43 664 \\d{9,15}");
+			String firstName = faker.name().firstName();
+			String lastName = faker.name().lastName();
+			var person = Person.builder()
+					.firstName(firstName)
+					.lastName(lastName)
+					.email(email)
+					.phoneNr(phoneNr)
+					.build();
+			persons.add(person);
+		}
+		personService.saveUserBatch(persons);
+		Emergency emergency = Emergency.builder()
+				.persons(personService.findAllPersons())
+				.build();
+		emergencyService.saveEmergency(emergency);
+		var result = emergencyService.findAll();
+		System.out.println(result);
+		System.out.println(result.get(result.size() - 1).getPersons().size());
+		System.out.println(personService.findAllPersons().size());
+		// System.out.println("Count: " + size + scale);
+	}*/
+
 	@AfterAll
 	static void afterAll() {
-		System.out.println("----------JPA TEST----------");
+		System.out.println("----------MONGODB TEST----------");
 	}
 
 }

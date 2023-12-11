@@ -15,6 +15,7 @@
 	</properties>
 	<modules>
 		<module>efees-mongodb</module>
+		<module>efees-mongodb-ref</module>
 		<module>efees-jpa</module>
 	</modules>
 </project>

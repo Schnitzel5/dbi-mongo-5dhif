@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link rel="stylesheet" th:href="@{/css/tabler.min.css}">
+    <title>EFEES</title>
+</head>
+
+<body>
+<div class="mt-3 p-6 max-w-sm mx-auto bg-white rounded-xl shadow-lg">
+    <div>
+        <div class="container">
+            <div style="font-size: 16px; color: #0a2b4c; font-family: 'JetBrains Mono Medium', sans-serif">
+                <label class="form-label" for="form-select">Emergency wählen</label>
+                <select class="form-select" id="form-select">
+                    <option th:each="em : ${emergencies}"
+                            th:text="${em.notice}"
+                            th:value="${em.id}"
+                            th:selected="${em.id == currentEmergency}"></option>
+                </select>
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th class="w-1"></th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="person : ${persons}">
+                            <td th:text="${person.firstName} + ' ' + ${person.lastName}"></td>
+                            <td></td>
+                            <td class="text-secondary" th:text="${person.safety}">
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:src="@{/js/tabler.min.js}"></script>
+<script>
+    document.getElementById('form-select').addEventListener('change', ev => {
+        console.log(ev.target.value);
+        window.location.href = `http://localhost:8080/${ev.target.value}`;
+    });
+</script>
+</body>
+</html>

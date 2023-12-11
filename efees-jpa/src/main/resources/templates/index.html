@@ -10,6 +10,21 @@
 </head>
 
 <body>
-
+<div class="mt-3 p-6 max-w-sm mx-auto bg-white rounded-xl shadow-lg">
+    <div>
+        <div class="container">
+            <div style="font-size: 16px; color: #0a2b4c; font-family: 'JetBrains Mono Medium', sans-serif">
+                <a th:href="@{/admin/student/add}" class="btn btn-primary my-3">Create Student</a>
+                <div class="card my-2" style="width: 18rem;" th:each="person : ${persons}">
+                    <div class="card-body">
+                        <p class="card-text" th:text="'Name: ' + ${person.firstName} + ' ' + ${person.lastName}"></p>
+                        <p class="card-text" th:text="'Status: ' + ${person.safety}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:src="@{/js/tabler.min.js}"></script>
 </body>
 </html>

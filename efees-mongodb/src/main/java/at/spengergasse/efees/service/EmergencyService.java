@@ -5,7 +5,6 @@ import at.spengergasse.efees.model.Emergency;
 import at.spengergasse.efees.model.Person;
 import at.spengergasse.efees.repository.EmergencyRepository;
 import lombok.RequiredArgsConstructor;
-import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +37,19 @@ public class EmergencyService {
 
     public List<StatusDto> findAllByEmergencyOnlyCrucialInfoSorted(ObjectId id) {
         return emergencyRepository.findAllByEmergencyOnlyCrucialInfoSorted(id);
+    }
+
+    public void updatePerson(String email,
+                             String firstName,
+                             String lastName,
+                             String newEmail,
+                             String phoneNr,
+                             String safety) {
+        emergencyRepository.updatePerson(email, firstName, lastName, newEmail, phoneNr, safety);
+    }
+
+    public void deleteAll() {
+        emergencyRepository.deleteAll();
     }
 
     public Emergency saveEmergency(Emergency emergency) {

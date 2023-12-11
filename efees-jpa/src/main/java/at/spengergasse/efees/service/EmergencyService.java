@@ -37,6 +37,10 @@ public class EmergencyService {
                 .orElse(null);
     }
 
+    public void deleteAll() {
+        emergencyRepository.deleteAll();
+    }
+
     /*public Optional<Emergency> startEmergency() {
         if (getOpenEmergency().isPresent()) {
             throw new NotValidException("Emergency has already started!");

@@ -60,7 +60,7 @@ class EfeesApplicationTests {
 	@Order(3)
 	void insertHundredThousand() {
 		var start = Instant.now();
-		insertMass(100_000);
+		//insertMass(100_000);
 		var end = Instant.now();
 		System.out.println("Insert 100000: " + Duration.between(start, end).toString());
 	}
@@ -120,24 +120,40 @@ class EfeesApplicationTests {
 		System.out.println("findAllByEmergencyOnlyCrucialInfoSorted: " + Duration.between(start, end).toString());
 	}
 
+	@Test
+	@Order(8)
+	void updateAll() {
+		var start = Instant.now();
+		List<Person> persons = emergencyService.findAllPersons();
+		Safety[] safetyValues = Safety.values();
+		persons.forEach(person -> {
+			var tempPerson = generateFakePerson("upd", safetyValues);
+			emergencyService.updatePerson(
+					person.getEmail(),
+					tempPerson.getFirstName(),
+					tempPerson.getLastName(),
+					tempPerson.getEmail(),
+					tempPerson.getPhoneNr(),
+					tempPerson.getSafety().name());
+		});
+		var end = Instant.now();
+		System.out.println("updateAll: " + Duration.between(start, end).toString());
+	}
+
+	@Test
+	@Order(9)
+	void deleteAll() {
+		var start = Instant.now();
+		emergencyService.deleteAll();
+		var end = Instant.now();
+		System.out.println("deleteAll: " + Duration.between(start, end).toString());
+	}
+
 	private void insertMass(int scale) {
 		List<Person> persons = new ArrayList<>();
 		Safety[] safetyValues = Safety.values();
 		for (int i = 0; i < scale; i++) {
-			Faker faker = new Faker(Locale.GERMAN);
-			FakeValuesService fakeValuesService = new FakeValuesService(Locale.GERMAN, new RandomService());
-			String email = scale + fakeValuesService.bothify("???#??????##???##??##??##??##@gmail.com");
-			String phoneNr = fakeValuesService.regexify("+43 664 \\d{9,15}");
-			String firstName = faker.name().firstName();
-			String lastName = faker.name().lastName();
-			var person = Person.builder()
-					.firstName(firstName)
-					.lastName(lastName)
-					.email(email)
-					.phoneNr(phoneNr)
-					.safety(safetyValues[ThreadLocalRandom.current().nextInt(safetyValues.length)])
-					.build();
-			persons.add(person);
+			persons.add(generateFakePerson("" + scale, safetyValues));
 		}
 		// personService.saveUserBatch(persons);
 		Emergency emergency = Emergency.builder()
@@ -147,6 +163,22 @@ class EfeesApplicationTests {
 		var result = emergencyService.findAll();
 		System.out.println(result.get(result.size() - 1).getPersons().size());
 		// System.out.println("Count: " + size + scale);
+	}
+
+	private Person generateFakePerson(String scale, Safety[] safetyValues){
+		Faker faker = new Faker(Locale.GERMAN);
+		FakeValuesService fakeValuesService = new FakeValuesService(Locale.GERMAN, new RandomService());
+		String email = scale + fakeValuesService.bothify("???#??????##???##??##??##??##@gmail.com");
+		String phoneNr = fakeValuesService.regexify("+43 664 \\d{9,15}");
+		String firstName = faker.name().firstName();
+		String lastName = faker.name().lastName();
+		return Person.builder()
+				.firstName(firstName)
+				.lastName(lastName)
+				.email(email)
+				.phoneNr(phoneNr)
+				.safety(safetyValues[ThreadLocalRandom.current().nextInt(safetyValues.length)])
+				.build();
 	}
 
 	/*private void insertMass(int scale) {

@@ -28,5 +28,6 @@ public class Emergency {
     private String notice = "";
     @Setter
     private boolean finished;
+
     private List<Person> persons;
 }

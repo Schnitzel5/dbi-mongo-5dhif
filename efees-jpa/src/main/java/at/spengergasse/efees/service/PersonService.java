@@ -15,6 +15,7 @@ import java.util.Optional;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @Transactional
 public class PersonService {
+
     private final PersonRepository personRepository;
 
     public Optional<Person> findPersonById(long id) {
@@ -67,5 +68,9 @@ public class PersonService {
 
     public void deleteUser(long userId) {
         personRepository.deleteById(userId);
+    }
+
+    public void deleteAll() {
+        personRepository.deleteAll();
     }
 }

@@ -8,6 +8,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+import org.springframework.data.mongodb.repository.Update;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
@@ -58,4 +59,17 @@ public interface EmergencyRepository extends MongoRepository<Emergency, ObjectId
             "{ $sort: { 'safety': 1, 'lastName': 1 } }"
     })
     List<StatusDto> findAllByEmergencyOnlyCrucialInfoSorted(@Param("id") ObjectId id);
+    @Query("{ 'persons.email': '?0' }")
+    @Update("{ $set: { " +
+                    "'persons.$.firstName': '?1', " +
+                    "'persons.$.lastName': '?2', " +
+                    "'persons.$.email': '?3', " +
+                    "'persons.$.phoneNr': '?4', " +
+                    "'persons.$.safety': '?5' } }")
+    void updatePerson(@Param("email") String email,
+                  @Param("firstName") String firstName,
+                  @Param("lastName") String lastName,
+                  @Param("newEmail") String newEmail,
+                  @Param("phoneNr") String phoneNr,
+                  @Param("safety") String safety);
 }

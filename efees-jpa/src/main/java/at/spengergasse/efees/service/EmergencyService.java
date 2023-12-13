@@ -23,6 +23,10 @@ public class EmergencyService {
         return emergencyRepository.findAll();
     }
 
+    public Optional<Emergency> findByNotice(String notice) {
+        return emergencyRepository.findByNotice(notice);
+    }
+
     public Optional<Emergency> getOpenEmergency() {
         return emergencyRepository.findOpenEmergencies().stream().findAny();
     }

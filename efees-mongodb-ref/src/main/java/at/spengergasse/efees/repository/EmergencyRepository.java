@@ -3,7 +3,6 @@ package at.spengergasse.efees.repository;
 import at.spengergasse.efees.dto.StatusDto;
 import at.spengergasse.efees.model.Emergency;
 import at.spengergasse.efees.model.Person;
-import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -40,22 +39,24 @@ public interface EmergencyRepository extends MongoRepository<Emergency, ObjectId
     Optional<Person> findByEmail(@Param("email") String email);
     @Aggregation(pipeline = {
             "{ $match: { _id: '?0' } }",
-            "{ $unwind: '$persons' }",
+            //"{ $lookup: { from: 'persons', localField: 'persons', foreignField: '_id', as: 'person' } }",
+            "{ $unwind: '$person' }",
             "{ $project: { " +
                     "_id: 0, " +
-                    "'firstName': '$persons.firstName', " +
-                    "'lastName': '$persons.lastName', " +
-                    "'safety': '$persons.safety' } }"
+                    "'firstName': '$person.firstName', " +
+                    "'lastName': '$person.lastName', " +
+                    "'safety': '$person.safety' } }"
     })
     List<StatusDto> findAllByEmergencyOnlyCrucialInfo(@Param("id") ObjectId id);
     @Aggregation(pipeline = {
             "{ $match: { _id: '?0' } }",
-            "{ $unwind: '$persons' }",
+            //"{ $lookup: { from: 'persons', localField: 'persons', foreignField: '_id', as: 'person' } }",
+            "{ $unwind: '$person' }",
             "{ $project: { " +
                     "_id: 0, " +
-                    "'firstName': '$persons.firstName', " +
-                    "'lastName': '$persons.lastName', " +
-                    "'safety': '$persons.safety' } }",
+                    "'firstName': '$person.firstName', " +
+                    "'lastName': '$person.lastName', " +
+                    "'safety': '$person.safety' } }",
             "{ $sort: { 'safety': 1, 'lastName': 1 } }"
     })
     List<StatusDto> findAllByEmergencyOnlyCrucialInfoSorted(@Param("id") ObjectId id);

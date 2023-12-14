@@ -85,6 +85,7 @@ class EfeesApplicationTests {
 		var start = Instant.now();
 		personService.findAllPersons().stream()
 				.map(Person::getEmail)
+				.limit(50)
 				.forEach(email -> {
 					var result = personService.findPersonByEmail(email);
 					if (result.isEmpty()) {

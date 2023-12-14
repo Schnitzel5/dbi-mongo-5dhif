@@ -150,9 +150,9 @@ class EfeesApplicationTests {
 		List<Person> persons = new ArrayList<>();
 		Safety[] safetyValues = Safety.values();
 		for (int i = 0; i < scale; i++) {
-			persons.add(generateFakePerson("" + scale, safetyValues));
+			var person = generateFakePerson("" + scale, safetyValues);
+			persons.add(personService.saveUser(person));
 		}
-		personService.saveUserBatch(persons);
 		Emergency emergency = Emergency.builder()
 				.persons(persons)
 				.build();

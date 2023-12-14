@@ -133,9 +133,7 @@ class EfeesApplicationTests {
 				.stream()
 				.limit(1000)
 				.forEach(person -> {
-					var temp = generateFakePerson("upd", safetyValues);
-					person.setEmergency(null);
-					personService.updateUserOptimized(person, temp);
+					personService.updateUserOptimized(person, generateFakePerson("upd", safetyValues));
 				});
 		var end = Instant.now();
 		System.out.println("updateAll: " + Duration.between(start, end).toString());

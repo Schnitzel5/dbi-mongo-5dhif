@@ -50,6 +50,7 @@ public class PrepareConfig {
                     .email(email)
                     .phoneNr(phoneNr)
                     .safety(safetyValues[ThreadLocalRandom.current().nextInt(safetyValues.length)])
+                    .emergency(emergency)
                     .build();
             persons.add(personService.saveUser(person));
         }

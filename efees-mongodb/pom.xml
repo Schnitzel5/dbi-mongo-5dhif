@@ -114,6 +114,7 @@
                         <phase>initialize</phase>
                         <configuration>
                             <version>3.0.2</version>
+                            <logging>file</logging>
                             <!--<imports>
                                 <import>
                                     <database>wahlpflichtfaecher</database>

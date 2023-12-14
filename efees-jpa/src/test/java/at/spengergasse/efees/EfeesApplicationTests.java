@@ -129,8 +129,14 @@ class EfeesApplicationTests {
 	void updateAll() {
 		var start = Instant.now();
 		Safety[] safetyValues = Safety.values();
-		personService.findAllPersons().forEach(person ->
-				personService.updateUser(person.getEmail(), generateFakePerson("upd", safetyValues)));
+		personService.findAllPersons()
+				.stream()
+				.limit(1000)
+				.forEach(person -> {
+					var temp = generateFakePerson("upd", safetyValues);
+					person.setEmergency(null);
+					personService.updateUserOptimized(person, temp);
+				});
 		var end = Instant.now();
 		System.out.println("updateAll: " + Duration.between(start, end).toString());
 	}
@@ -139,11 +145,6 @@ class EfeesApplicationTests {
 	@Order(9)
 	void deleteAll() {
 		var start = Instant.now();
-		List<Person> persons = personService.findAllPersons();
-		persons.forEach(person -> {
-			person.setEmergency(null);
-			personService.saveUser(person);
-		});
 		emergencyService.deleteAll();
 		personService.deleteAll();
 		var end = Instant.now();

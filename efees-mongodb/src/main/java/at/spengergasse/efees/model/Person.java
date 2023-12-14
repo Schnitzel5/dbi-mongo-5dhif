@@ -3,6 +3,7 @@ package at.spengergasse.efees.model;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.FieldType;
@@ -28,6 +29,7 @@ public class Person {
     @NotNull
     @Setter
     @Field("email")
+    @Indexed
     protected String email;
     @Setter
     @Field("phoneNr")

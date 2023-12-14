@@ -126,7 +126,9 @@ class EfeesApplicationTests {
 		var start = Instant.now();
 		List<Person> persons = emergencyService.findAllPersons();
 		Safety[] safetyValues = Safety.values();
-		persons.forEach(person -> {
+		persons.stream()
+				.limit(1000)
+				.forEach(person -> {
 			var tempPerson = generateFakePerson("upd", safetyValues);
 			emergencyService.updatePerson(
 					person.getEmail(),

@@ -51,6 +51,14 @@ public class PersonService {
         personRepository.saveAll(users);
     }
 
+    public Person updateUserOptimized(Person old, Person person) {
+        Optional.ofNullable(person.getFirstName()).ifPresent(old::setFirstName);
+        Optional.ofNullable(person.getLastName()).ifPresent(old::setLastName);
+        Optional.ofNullable(person.getEmail()).ifPresent(old::setEmail);
+        Optional.ofNullable(person.getPhoneNr()).ifPresent(old::setPhoneNr);
+        return saveUser(old);
+    }
+
     public Person updateUser(String email, Person person) {
         if (email == null || person == null) {
             return null;

@@ -155,14 +155,12 @@ class EfeesApplicationTests {
 		for (int i = 0; i < scale; i++) {
 			persons.add(generateFakePerson("" + scale, safetyValues));
 		}
-		// personService.saveUserBatch(persons);
 		Emergency emergency = Emergency.builder()
 				.persons(persons)
 				.build();
 		emergencyService.saveEmergency(emergency);
 		var result = emergencyService.findAll();
 		System.out.println(result.get(result.size() - 1).getPersons().size());
-		// System.out.println("Count: " + size + scale);
 	}
 
 	private Person generateFakePerson(String scale, Safety[] safetyValues){
@@ -180,35 +178,6 @@ class EfeesApplicationTests {
 				.safety(safetyValues[ThreadLocalRandom.current().nextInt(safetyValues.length)])
 				.build();
 	}
-
-	/*private void insertMass(int scale) {
-		List<Person> persons = new ArrayList<>();
-		for (int i = 0; i < scale; i++) {
-			Faker faker = new Faker(Locale.GERMAN);
-			FakeValuesService fakeValuesService = new FakeValuesService(Locale.GERMAN, new RandomService());
-			String email = fakeValuesService.bothify("????##@gmail.com");
-			String phoneNr = fakeValuesService.regexify("+43 664 \\d{9,15}");
-			String firstName = faker.name().firstName();
-			String lastName = faker.name().lastName();
-			var person = Person.builder()
-					.firstName(firstName)
-					.lastName(lastName)
-					.email(email)
-					.phoneNr(phoneNr)
-					.build();
-			persons.add(person);
-		}
-		personService.saveUserBatch(persons);
-		Emergency emergency = Emergency.builder()
-				.persons(personService.findAllPersons())
-				.build();
-		emergencyService.saveEmergency(emergency);
-		var result = emergencyService.findAll();
-		System.out.println(result);
-		System.out.println(result.get(result.size() - 1).getPersons().size());
-		System.out.println(personService.findAllPersons().size());
-		// System.out.println("Count: " + size + scale);
-	}*/
 
 	@AfterAll
 	static void afterAll() {

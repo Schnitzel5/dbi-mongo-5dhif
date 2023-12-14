@@ -72,48 +72,6 @@ class EfeesApplicationTests {
 
 	@Test
 	@Order(4)
-	void updateAll() {
-		var start = Instant.now();
-		Safety[] safetyValues = Safety.values();
-		emergencyService.findByNotice("100").ifPresent(emergency ->
-				emergency.getPersons().forEach(person -> {
-					var temp = generateFakePerson("upd", safetyValues);
-					person.setEmergency(emergency);
-					person.setFirstName(temp.getFirstName());
-					person.setLastName(temp.getLastName());
-					person.setEmail(temp.getEmail());
-					person.setPhoneNr(temp.getPhoneNr());
-					person.setSafety(temp.getSafety());
-					personService.saveUser(person);
-				}));
-		emergencyService.findByNotice("1000").ifPresent(emergency ->
-				emergency.getPersons().forEach(person -> {
-					var temp = generateFakePerson("upd", safetyValues);
-					person.setEmergency(emergency);
-					person.setFirstName(temp.getFirstName());
-					person.setLastName(temp.getLastName());
-					person.setEmail(temp.getEmail());
-					person.setPhoneNr(temp.getPhoneNr());
-					person.setSafety(temp.getSafety());
-					personService.saveUser(person);
-				}));
-		emergencyService.findByNotice("100000").ifPresent(emergency ->
-				emergency.getPersons().forEach(person -> {
-					var temp = generateFakePerson("upd", safetyValues);
-					person.setEmergency(emergency);
-					person.setFirstName(temp.getFirstName());
-					person.setLastName(temp.getLastName());
-					person.setEmail(temp.getEmail());
-					person.setPhoneNr(temp.getPhoneNr());
-					person.setSafety(temp.getSafety());
-					personService.saveUser(person);
-				}));
-		var end = Instant.now();
-		System.out.println("updateAll: " + Duration.between(start, end).toString());
-	}
-
-	@Test
-	@Order(5)
 	void findAll() {
 		var start = Instant.now();
 		System.out.println("FindAll: " + personService.findAllPersons().size());
@@ -122,7 +80,7 @@ class EfeesApplicationTests {
 	}
 
 	@Test
-	@Order(6)
+	@Order(5)
 	void findByEmail() {
 		var start = Instant.now();
 		personService.findAllPersons().stream()
@@ -138,7 +96,7 @@ class EfeesApplicationTests {
 	}
 
 	@Test
-	@Order(7)
+	@Order(6)
 	void findAllByEmergencyOnlyCrucialInfo() {
 		var start = Instant.now();
 		emergencyService.findAll().stream().filter(emergency -> emergency.getId() != null)
@@ -152,7 +110,7 @@ class EfeesApplicationTests {
 	}
 
 	@Test
-	@Order(8)
+	@Order(7)
 	void findAllByEmergencyOnlyCrucialInfoSorted() {
 		var start = Instant.now();
 		emergencyService.findAll().stream().filter(emergency -> emergency.getId() != null)
@@ -163,6 +121,17 @@ class EfeesApplicationTests {
 				});
 		var end = Instant.now();
 		System.out.println("findAllByEmergencyOnlyCrucialInfoSorted: " + Duration.between(start, end).toString());
+	}
+
+	@Test
+	@Order(8)
+	void updateAll() {
+		var start = Instant.now();
+		Safety[] safetyValues = Safety.values();
+		personService.findAllPersons().forEach(person ->
+				personService.updateUser(person.getEmail(), generateFakePerson("upd", safetyValues)));
+		var end = Instant.now();
+		System.out.println("updateAll: " + Duration.between(start, end).toString());
 	}
 
 	@Test
@@ -182,15 +151,19 @@ class EfeesApplicationTests {
 
 	private void insertMass(int scale) {
 		List<Person> persons = new ArrayList<>();
-		Safety[] safetyValues = Safety.values();
-		int size = personService.findAllPersons().size();
-		for (int i = 0; i < scale; i++) {
-			persons.add(generateFakePerson("" + scale, safetyValues));
-		}
 		Emergency emergency = Emergency.builder()
 				.persons(persons)
 				.notice("" + scale)
 				.build();
+		emergency = emergencyService.saveEmergency(emergency);
+		Safety[] safetyValues = Safety.values();
+		int size = personService.findAllPersons().size();
+		for (int i = 0; i < scale; i++) {
+			var person = generateFakePerson("" + scale, safetyValues);
+			person.setEmergency(emergency);
+			persons.add(personService.saveUser(person));
+		}
+		emergency.setPersons(persons);
 		emergencyService.saveEmergency(emergency);
 		System.out.println("Count: " + (size + scale));
 	}

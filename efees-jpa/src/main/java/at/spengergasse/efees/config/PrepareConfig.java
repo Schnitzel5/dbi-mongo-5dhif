@@ -32,6 +32,10 @@ public class PrepareConfig {
 
     private void insertSample(String notice) {
         Safety[] safetyValues = Safety.values();
+        Emergency emergency = Emergency.builder()
+                .notice(notice)
+                .build();
+        emergency = emergencyService.saveEmergency(emergency);
         List<Person> persons = new ArrayList<>();
         for (int i = 0; i < 15; i++) {
             Faker faker = new Faker(Locale.GERMAN);
@@ -47,16 +51,9 @@ public class PrepareConfig {
                     .phoneNr(phoneNr)
                     .safety(safetyValues[ThreadLocalRandom.current().nextInt(safetyValues.length)])
                     .build();
-            persons.add(person);
+            persons.add(personService.saveUser(person));
         }
-        Emergency emergency = Emergency.builder()
-                .persons(persons)
-                .notice(notice)
-                .build();
-        var result = emergencyService.saveEmergency(emergency);
-        result.getPersons().forEach(person -> {
-            person.setEmergency(emergency);
-            personService.saveUser(person);
-        });
+        emergency.setPersons(persons);
+        emergencyService.saveEmergency(emergency);
     }
 }
